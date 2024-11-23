@@ -4,6 +4,7 @@ import {
     InfoCircleFilled,
     MenuFoldOutlined,
     MenuUnfoldOutlined,
+    PlusCircleFilled,
     ProductFilled
 } from '@ant-design/icons';
 import { Button, Layout, Menu, theme } from 'antd';
@@ -38,6 +39,11 @@ const AppLayout: React.FC = () => {
                         },
                         {
                             key: '3',
+                            icon: <PlusCircleFilled />,
+                            label: <Link to="/create">Add course</Link>,
+                        },
+                        {
+                            key: '4',
                             icon: <InfoCircleFilled />,
                             label: <Link to="/about">About</Link>,
                         },
@@ -72,5 +78,4 @@ const AppLayout: React.FC = () => {
         </Layout>
     );
 };
-
 export default AppLayout;
