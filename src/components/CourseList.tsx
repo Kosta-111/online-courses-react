@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Button, message, Popconfirm, Space, Table, Tag } from 'antd';
-import { DeleteOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { DeleteOutlined, EditOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import type { TableProps } from 'antd';
 import { Link } from 'react-router-dom';
 import { CourseModel } from '../models/courses';
@@ -93,6 +93,9 @@ const CourseList: React.FC = () => {
                 <Space size="middle">
                     <Link to={`/details/${item.id}`}>
                         <Button color="primary" variant="text" icon={<InfoCircleOutlined />}></Button>
+                    </Link>
+                    <Link to={`/edit/${item.id}`}>
+                        <Button type="text" icon={<EditOutlined />}></Button>
                     </Link>
                     <Popconfirm
                         title="Delete course"

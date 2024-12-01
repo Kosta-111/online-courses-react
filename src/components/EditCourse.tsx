@@ -1,7 +1,7 @@
 import { Button, Checkbox, Form, FormProps, Input, InputNumber, message, Select, Space, Upload } from 'antd'
 import TextArea from 'antd/es/input/TextArea'
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { LeftOutlined, UploadOutlined } from '@ant-design/icons';
 import { CategoryLevelModel, CategoryLevelOption, CourseFormField } from '../models/courses';
 import axios from 'axios';
@@ -12,11 +12,13 @@ const normFile = (e: any) => {
     return e?.file.originFileObj;
 };
 
-export default function CreateCourse() {
+export default function EditCourse() {
 
     const [categories, setCategories] = useState<CategoryLevelOption[]>([]);
     const [levels, setLevels] = useState<CategoryLevelOption[]>([]);
     const navigate = useNavigate();
+    const { id } = useParams();
+    const [form] = Form.useForm<CourseFormField>();
 
     useEffect(() => {
         fetch(api + "categories").then(res => res.json())
@@ -33,6 +35,9 @@ export default function CreateCourse() {
                     return { label: x.name, value: x.id };
                 }));
             });
+        axios.get(api + id).then(res => {form.setFieldsValue(res.data);
+            console.log(res.data);
+        });
     }, []);
 
     const onSubmit: FormProps<CourseFormField>['onFinish'] = (item) => {
@@ -43,9 +48,9 @@ export default function CreateCourse() {
             data.append(key, item[key as keyof CourseFormField] as string | Blob);
         }
 
-        axios.post(api, data).then(res => {
+        axios.put(api, data).then(res => {
             if (res.status === 200) {
-                message.success("Online course created successfully!");
+                message.success("Online course edited successfully!");
                 navigate("/courses");
             }
         }).catch(err => {
@@ -61,7 +66,7 @@ export default function CreateCourse() {
     return (
         <div>
             <Button onClick={() => navigate(-1)} color="default" variant="text" icon={<LeftOutlined />}>Back</Button>
-            <h2>Create Online Course</h2>
+            <h2>Edit Online Course</h2>
             <Form
                 labelCol={{
                     span: 4,
@@ -69,10 +74,11 @@ export default function CreateCourse() {
                 wrapperCol={{
                     span: 19,
                 }}
-                initialValues={{ isCertificate: false, discount: 0 }}
                 layout="horizontal"
+                form={form}
                 onFinish={onSubmit}
             >
+                <Form.Item<CourseFormField> hidden name="id"></Form.Item>
                 <Form.Item<CourseFormField> label="Name" name="name"
                     rules={[
                         {
@@ -147,6 +153,7 @@ export default function CreateCourse() {
                 <Form.Item<CourseFormField> label="Description" name="description">
                     <TextArea rows={4} />
                 </Form.Item>
+                <Form.Item<CourseFormField> hidden name="imageUrl"></Form.Item>
                 <Form.Item<CourseFormField> label="Image" name="image" valuePropName="file" getValueFromEvent={normFile}>
                     <Upload maxCount={1}>
                         <Button icon={<UploadOutlined />}>Click to Upload</Button>
@@ -166,7 +173,7 @@ export default function CreateCourse() {
                             Cancel
                         </Button>
                         <Button type="primary" htmlType="submit">
-                            Create
+                            Save
                         </Button>
                     </Space>
                 </Form.Item>

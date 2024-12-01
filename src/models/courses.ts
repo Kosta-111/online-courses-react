@@ -13,16 +13,18 @@ export interface CourseModel {
 }
 
 export interface CourseFormField {
+    id?: number;
     name: string;
     imageUrl?: string;
+    image?: File;
     description?: string;
     language: string;
     price: number;
     discount: number;
     rating: number;
     isCertificate: boolean;
-    levelId: string;
-    categoryId: string;
+    levelId: number;
+    categoryId: number;
 }
 
 export interface CategoryLevelOption {
