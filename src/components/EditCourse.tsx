@@ -1,4 +1,4 @@
-import { Button, Checkbox, Form, FormProps, Input, InputNumber, message, Select, Space, Upload } from 'antd'
+import { Button, Checkbox, Form, FormProps, Input, InputNumber, message, Select, Space, Upload, Image } from 'antd'
 import TextArea from 'antd/es/input/TextArea'
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom';
@@ -7,6 +7,7 @@ import { CategoryLevelModel, CategoryLevelOption, CourseFormField } from '../mod
 import axios from 'axios';
 
 const api = import.meta.env.VITE_COURSES_API;
+const host = import.meta.env.VITE_HOST;
 
 const normFile = (e: any) => {
     return e?.file.originFileObj;
@@ -16,6 +17,7 @@ export default function EditCourse() {
 
     const [categories, setCategories] = useState<CategoryLevelOption[]>([]);
     const [levels, setLevels] = useState<CategoryLevelOption[]>([]);
+    const [currentImageUrl, setCurrentImageUrl] = useState('');
     const navigate = useNavigate();
     const { id } = useParams();
     const [form] = Form.useForm<CourseFormField>();
@@ -35,8 +37,14 @@ export default function EditCourse() {
                     return { label: x.name, value: x.id };
                 }));
             });
-        axios.get(api + id).then(res => {form.setFieldsValue(res.data);
-            console.log(res.data);
+        axios.get(api + id).then(res => {
+            form.setFieldsValue(res.data);
+            if (res.data.imageUrl) {
+                const currentUrl = res.data.imageUrl?.startsWith('https://') || res.data.imageUrl?.startsWith('http://')
+                                    ? res.data.imageUrl
+                                    : `${host}/${res.data.imageUrl}`;
+                setCurrentImageUrl(currentUrl);
+            }
         });
     }, []);
 
@@ -155,6 +163,7 @@ export default function EditCourse() {
                 </Form.Item>
                 <Form.Item<CourseFormField> hidden name="imageUrl"></Form.Item>
                 <Form.Item<CourseFormField> label="Image" name="image" valuePropName="file" getValueFromEvent={normFile}>
+                    <img src={currentImageUrl} style={{height: "50px", margin: "10px", verticalAlign: "middle", border: "1px solid"}} />
                     <Upload maxCount={1}>
                         <Button icon={<UploadOutlined />}>Click to Upload</Button>
                     </Upload>

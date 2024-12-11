@@ -5,6 +5,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { CourseModel } from '../models/courses';
 
 const api = import.meta.env.VITE_COURSES_API;
+const host = import.meta.env.VITE_HOST;
 
 type QueryParams = {
     id: string;
@@ -28,7 +29,10 @@ export default function CourseDetails() {
                     <h2>{item.name}</h2>
                     <p>{item.categoryName} ({item.levelName})</p>
                     <hr />
-                    <Image width={200} src={item.imageUrl} alt={item.name} />
+                    <Image width={200} src={item.imageUrl?.startsWith('https://') || item.imageUrl?.startsWith('http://') || !item.imageUrl
+                                            ? item.imageUrl 
+                                            : `${host}/${item.imageUrl}`} 
+                                            alt={item.name} />
                     <p>Language: {item.language}</p>
                     <p>Price: {item.price}$</p>
                     <p>Discount: {item.discount}%</p>

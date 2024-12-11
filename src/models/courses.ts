@@ -15,8 +15,8 @@ export interface CourseModel {
 export interface CourseFormField {
     id?: number;
     name: string;
-    imageUrl?: string;
     image?: File;
+    imageUrl?: string;
     description?: string;
     language: string;
     price: number;

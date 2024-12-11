@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import { CourseModel } from '../models/courses';
 
 const api = import.meta.env.VITE_COURSES_API;
+const host = import.meta.env.VITE_HOST;
 
 const CourseList: React.FC = () => {
 
@@ -27,7 +28,11 @@ const CourseList: React.FC = () => {
             title: 'Image',
             dataIndex: 'imageUrl',
             key: 'image',
-            render: (_, item) => <img src={item.imageUrl} alt={item.name} style={{height: "30px", margin: "auto", display: "block"}} />,
+            render: (_, item) => <img src={item.imageUrl?.startsWith('https://') || item.imageUrl?.startsWith('http://') || !item.imageUrl
+                                        ? item.imageUrl 
+                                        : `${host}/${item.imageUrl}`} 
+                                        alt={item.name} 
+                                        style={{height: "30px", margin: "auto", display: "block"}} />,
         },
         {
             title: 'Name',
