@@ -4,6 +4,7 @@ import { DeleteOutlined, EditOutlined, InfoCircleOutlined } from '@ant-design/ic
 import type { TableProps } from 'antd';
 import { Link } from 'react-router-dom';
 import { CourseModel } from '../models/courses';
+import { tokenService } from '../services/token.service';
 
 const api = import.meta.env.VITE_COURSES_API;
 const host = import.meta.env.VITE_HOST;
@@ -13,7 +14,10 @@ const CourseList: React.FC = () => {
     const [courses, setCourses] = useState<CourseModel[]>();
 
     useEffect(() => {
-        fetch(api).then(res => res.json()).then(data => {
+        fetch(api, { headers: {
+            Authorization: `Bearer ${tokenService.get()}`
+        }})
+          .then(res => res.json()).then(data => {
             setCourses(data);
         });
     }, []);
@@ -118,7 +122,9 @@ const CourseList: React.FC = () => {
 
     const deleteCourse = (id: number) => {
         
-        fetch(api + id, { method: "DELETE" })
+        fetch(api + id, { method: "DELETE", headers: {
+            Authorization: `Bearer ${tokenService.get()}`
+        }})
             .then(res => {
                 if (res.status === 200) {
                     setCourses(courses?.filter(x => x.id !== id));

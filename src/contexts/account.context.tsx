@@ -1,4 +1,5 @@
 import React, { useContext } from "react";
+import { tokenService } from "../services/token.service";
 
 export type AccountContextType = {
     email: string | null;
@@ -11,7 +12,7 @@ export const AccountContext = React.createContext<AccountContextType | null>(nul
 
 export const AccountProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     
-    const [email, setEmail] = React.useState<string | null>(null);
+    const [email, setEmail] = React.useState<string | null>(tokenService.getPayload()?.email ?? null);
     const clear = () => setEmail(null);
     const isAuth = () => email !== null;
 

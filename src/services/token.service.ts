@@ -1,3 +1,6 @@
+import { jwtDecode } from "jwt-decode";
+import { TokenPayload, TokenPayloadItems } from "../models/accounts";
+
 const accessTokenKey = "access-token";
 
 export const tokenService = {
@@ -10,7 +13,18 @@ export const tokenService = {
     clear(): void {
         localStorage.removeItem(accessTokenKey);
     },
-    getPayload() {
-        // TODO
+    getPayload(): TokenPayload | null {
+        const token = this.get();
+        if (token === null) return null;
+        try {
+            const payload = jwtDecode<TokenPayloadItems>(token);
+            return {
+                id: payload["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"],
+                email: payload["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"],
+                birthDate: payload["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/dateofbirth"]
+            }
+        } catch (Error) {
+            return null;
+        }
     }
 }

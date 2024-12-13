@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { LeftOutlined, UploadOutlined } from '@ant-design/icons';
 import { CategoryLevelModel, CategoryLevelOption, CourseFormField } from '../models/courses';
+import { tokenService } from '../services/token.service';
 import axios from 'axios';
 
 const api = import.meta.env.VITE_COURSES_API;
@@ -18,15 +19,19 @@ export default function CreateCourse() {
     const [levels, setLevels] = useState<CategoryLevelOption[]>([]);
     const navigate = useNavigate();
 
+    const config = {
+        headers: { Authorization: `Bearer ${tokenService.get()}` }
+    };
+
     useEffect(() => {
-        fetch(api + "categories").then(res => res.json())
+        fetch(api + "categories", config).then(res => res.json())
             .then(data => {
                 const items = data as CategoryLevelModel[];
                 setCategories(items.map(x => {
                     return { label: x.name, value: x.id };
                 }));
             });
-        fetch(api + "levels").then(res => res.json())
+        fetch(api + "levels", config).then(res => res.json())
             .then(data => {
                 const items = data as CategoryLevelModel[];
                 setLevels(items.map(x => {
@@ -43,7 +48,7 @@ export default function CreateCourse() {
             data.append(key, item[key as keyof CourseFormField] as string | Blob);
         }
 
-        axios.post(api, data).then(res => {
+        axios.post(api, data, config).then(res => {
             if (res.status === 200) {
                 message.success("Online course created successfully!");
                 navigate("/courses");

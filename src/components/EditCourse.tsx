@@ -1,9 +1,10 @@
-import { Button, Checkbox, Form, FormProps, Input, InputNumber, message, Select, Space, Upload, Image } from 'antd'
+import { Button, Checkbox, Form, FormProps, Input, InputNumber, message, Select, Space, Upload } from 'antd'
 import TextArea from 'antd/es/input/TextArea'
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom';
 import { LeftOutlined, UploadOutlined } from '@ant-design/icons';
 import { CategoryLevelModel, CategoryLevelOption, CourseFormField } from '../models/courses';
+import { tokenService } from '../services/token.service';
 import axios from 'axios';
 
 const api = import.meta.env.VITE_COURSES_API;
@@ -22,22 +23,26 @@ export default function EditCourse() {
     const { id } = useParams();
     const [form] = Form.useForm<CourseFormField>();
 
+    const config = {
+        headers: { Authorization: `Bearer ${tokenService.get()}` }
+    };
+
     useEffect(() => {
-        fetch(api + "categories").then(res => res.json())
+        fetch(api + "categories", config).then(res => res.json())
             .then(data => {
                 const items = data as CategoryLevelModel[];
                 setCategories(items.map(x => {
                     return { label: x.name, value: x.id };
                 }));
             });
-        fetch(api + "levels").then(res => res.json())
+        fetch(api + "levels", config).then(res => res.json())
             .then(data => {
                 const items = data as CategoryLevelModel[];
                 setLevels(items.map(x => {
                     return { label: x.name, value: x.id };
                 }));
             });
-        axios.get(api + id).then(res => {
+        axios.get(api + id, config).then(res => {
             form.setFieldsValue(res.data);
             if (res.data.imageUrl) {
                 const currentUrl = res.data.imageUrl?.startsWith('https://') || res.data.imageUrl?.startsWith('http://')
@@ -56,7 +61,7 @@ export default function EditCourse() {
             data.append(key, item[key as keyof CourseFormField] as string | Blob);
         }
 
-        axios.put(api, data).then(res => {
+        axios.put(api, data, config).then(res => {
             if (res.status === 200) {
                 message.success("Online course edited successfully!");
                 navigate("/courses");
@@ -162,9 +167,9 @@ export default function EditCourse() {
                     <TextArea rows={4} />
                 </Form.Item>
                 <Form.Item<CourseFormField> hidden name="imageUrl"></Form.Item>
-                <Form.Item<CourseFormField> label="Image" name="image" valuePropName="file" getValueFromEvent={normFile}>
-                    <img src={currentImageUrl} style={{height: "50px", margin: "10px", verticalAlign: "middle", border: "1px solid"}} />
+                <Form.Item<CourseFormField> label="Image" name="image" valuePropName="file" getValueFromEvent={normFile}>                    
                     <Upload maxCount={1}>
+                        <img src={currentImageUrl} style={{height: "50px", margin: "10px", verticalAlign: "middle", border: "1px solid"}} />
                         <Button icon={<UploadOutlined />}>Click to Upload</Button>
                     </Upload>
                 </Form.Item>

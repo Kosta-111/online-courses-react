@@ -3,6 +3,7 @@ import { Button, Tag, Flex, Space, Skeleton, Image } from 'antd'
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom';
 import { CourseModel } from '../models/courses';
+import { tokenService } from '../services/token.service';
 
 const api = import.meta.env.VITE_COURSES_API;
 const host = import.meta.env.VITE_HOST;
@@ -18,7 +19,11 @@ export default function CourseDetails() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        fetch(api + id).then(res => res.json()).then(data => setItem(data));
+        fetch(api + id, { headers: {
+            Authorization: `Bearer ${tokenService.get()}`
+        }})
+          .then(res => res.json())
+          .then(data => setItem(data));
     });
 
     return (

@@ -18,14 +18,13 @@ const Login: React.FC = () => {
 
         axios.post(api + "login", values).then(res => {
             if (res.status === 200) {
-                console.log(res);
                 accountService.login(res.data.accessToken);
                 message.success("Signed In successfully!");
                 setEmail(values.email);
                 navigate(-1);
             }
         }).catch(err => {
-            message.error(err.response.data.detail);
+            message.error(err.response.data.message);
         });
     };
 
